@@ -1,5 +1,11 @@
 # fileup
 
+A file uploader demo powered by LeanCloud and Vue.
+
+## Configuration
+
+Fill in `appId`, `appKey`, `serverUrl` of your LeanCloud application in `main.js`.
+
 ## Project setup
 ```
 npm install
@@ -19,6 +25,3 @@ npm run build
 ```
 npm run lint
 ```
-
-### Customize configuration
-See [Configuration Reference](https://cli.vuejs.org/config/).
