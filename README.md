@@ -1,6 +1,6 @@
 # When Svelte Meets LeanCloud Files
 
-This is a simple file uploader demo built with [LeanCloud], SVelte, and TypeScript.
+This is a simple file uploader demo built with [LeanCloud], Svelte, and TypeScript.
 
 [LeanCloud]: https://leancloud.app
 
