@@ -1,16 +1,19 @@
 <script lang="ts">
   import LC from "leancloud-storage";
 
+  const appId = "your app id";
+  const appKey = "your app key";
+  const serverURL = "https://your-custom-domain.example.com";
+
   LC.init({
-    appId: "your-app-id",
-    appKey: "your-app-key",
-    serverURL: "https://your-custom-domain.example.com",
+    appId,
+    appKey,
+    serverURL,
   });
 
-  async function uploadFile(toUpload) {
-    const uploaded = await toUpload.save();
-    const url: string = uploaded.get("url");
-    return url;
+  async function uploadFile(toUpload): Promise<String> {
+    const uploaded = await new LC.File(toUpload.name, toUpload).save();
+    return uploaded.get("url");
   }
 
   let files: FileList;
@@ -19,31 +22,20 @@
       console.log(`${file.name}: ${file.size} bytes`);
     }
   }
-
-  let promise: Promise<string>
-  function upload() {
-    console.log("debug");
-    const firstFile = new LC.File(files[0].name, files[0]);
-    console.log(firstFile);
-    promise = uploadFile(firstFile);
-  }
 </script>
 
-<label for="fileUp">You can select multiple files but only one will be uploaded.</label>
+<label for="fileUp">You can select and upload multiple files.</label>
 <input bind:files id="fileUp" multiple type="file" />
-<button on:click={upload}>upload</button>
 
 {#if files}
-  <h2>Selected files:</h2>
+  <h2>Selected and to upload files:</h2>
   {#each Array.from(files) as file}
-    <p>{file.name} ({file.size} bytes)</p>
+    {#await uploadFile(file)}
+      <p>Uploading {file.name} ({file.size} bytes) ...</p>
+    {:then url}
+      <p>Uploaded: <code>{url ?? ""}</code></p>
+    {:catch error}
+      <p>Error! {error}</p>
+    {/await}
   {/each}
 {/if}
-
-{#await promise}
-  <p>Uploading...</p>
-{:then url}
-  <pre><code>{url ?? ""}</code></pre>
-{:catch error}
-  <p>Error! {error}</p>
-{/await}
