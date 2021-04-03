@@ -1,4 +1,5 @@
 <script lang="ts">
+  import Dropzone from "svelte-file-dropzone";
   import LC from "leancloud-storage";
 
   const appId = "your app id";
@@ -16,26 +17,36 @@
     return uploaded.get("url");
   }
 
-  let files: FileList;
-  $: if (files) {
-    for (const file of files) {
-      console.log(`${file.name}: ${file.size} bytes`);
-    }
+  let files: Array<File>
+  function handleFilesSelect(e) {
+    files = e.detail.acceptedFiles
   }
 </script>
 
-<label for="fileUp">You can select and upload multiple files.</label>
-<input bind:files id="fileUp" multiple type="file" />
+<style>
+  footer {
+    position: fixed;
+    bottom: 0;
+    width: 100%;
+    text-align:center;
+  }
+</style>
+
+<Dropzone on:drop={handleFilesSelect} />
 
 {#if files}
-  <h2>Selected and to upload files:</h2>
+  <h2>Files</h2>
   {#each Array.from(files) as file}
     {#await uploadFile(file)}
       <p>Uploading {file.name} ({file.size} bytes) ...</p>
     {:then url}
       <p>Uploaded: <code>{url ?? ""}</code></p>
     {:catch error}
-      <p>Error! {error}</p>
+      <pre>{error}</pre>
     {/await}
   {/each}
 {/if}
+
+<footer>
+  <p>Powered by <a href="https://leancloud.app/">LeanCloud</a> and <a href="https://svelte.dev/">Svelte</a>.</p>
+</footer>
