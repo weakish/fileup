@@ -1,4 +1,5 @@
 <script lang="ts">
+  import CopyToClipboard from "svelte-copy-to-clipboard";
   import Dropzone from "svelte-file-dropzone";
   import LC from "leancloud-storage";
 
@@ -17,9 +18,18 @@
     return uploaded.get("url");
   }
 
-  let files: Array<File>
+  let files: File[]
+  let copyStatuses: String[] 
   function handleFilesSelect(e) {
     files = e.detail.acceptedFiles
+    copyStatuses = Array(files.length).fill("📋")
+  }
+
+  function handleSuccessfulCopy(i) {
+    copyStatuses[i] = '✅'
+  }
+  function handleFailedCopy(i) {
+    copyStatuses[i] = '❌'
   }
 </script>
 
@@ -32,15 +42,22 @@
   }
 </style>
 
-<Dropzone on:drop={handleFilesSelect} />
+<Dropzone on:drop={handleFilesSelect}>
+  Click to select files, or drag and drop some files here.
+</Dropzone>
 
 {#if files}
   <h2>Files</h2>
-  {#each Array.from(files) as file}
+  {#each files as file, i}
     {#await uploadFile(file)}
       <p>Uploading {file.name} ({file.size} bytes) ...</p>
     {:then url}
-      <p>Uploaded: <code>{url ?? ""}</code></p>
+      <p>Uploaded:
+        <code>{url ?? ""}</code>
+        <CopyToClipboard text={url} on:copy={() => handleSuccessfulCopy(i)} on:fail={() => handleFailedCopy(i)} let:copy>
+          <button on:click={copy}>{copyStatuses[i]}</button>
+        </CopyToClipboard>
+      </p>
     {:catch error}
       <pre>{error}</pre>
     {/await}
