@@ -36,3 +36,14 @@ npm run dev
 ```sh
 npm run build
 ```
+
+Then upload the `public` directory to any web hosting service,
+e.g. [LeanEngine]:
+
+```sh
+cd public
+lean switch --region us-w1 --group web YOUR_APP_ID
+lean deploy --prod 1 
+```
+
+[LeanEngine]: https://docs.leancloud.app/leanengine_overview.html
